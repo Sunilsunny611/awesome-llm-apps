@@ -1,0 +1,38 @@
+{
+  "name": "real-time-event-discovery-app",
+  "version": "1.0.0",
+  "description": "A clean, map-centric web application for discovering and sharing live local events",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx http-server -c-1 -p 8000",
+    "deploy": "firebase deploy",
+    "init": "firebase init hosting",
+    "test": "echo \"Open demo.html in browser to test UI functionality\"",
+    "dev": "npx live-server --port=8000 --no-browser"
+  },
+  "keywords": [
+    "real-time",
+    "events",
+    "maps",
+    "firebase",
+    "javascript",
+    "web-app",
+    "local-events",
+    "discovery"
+  ],
+  "author": "Real-Time Event Discovery Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

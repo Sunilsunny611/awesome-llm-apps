@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Event Discovery - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'party': '#8B5CF6',
+                        'other': '#EF4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        #map { min-height: 400px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Demo Banner -->
+    <div class="bg-blue-600 text-white p-3 text-center">
+        <p class="text-sm">
+            🚀 <strong>DEMO MODE</strong> - UI and Map functionality preview. 
+            For full functionality, set up Firebase and Google Maps API keys.
+            <a href="README.md" class="underline ml-2">View Setup Instructions</a>
+        </p>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gray-900">🌍 Event Discovery</h1>
+                    </div>
+                    <div class="ml-4 text-sm text-gray-600">
+                        What's happening around you, right now
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-600">
+                        User ID: <span id="userId" class="font-mono text-purple-600">demo-user</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-party rounded-full"></div>
+                        <span class="text-sm text-gray-600">Party</span>
+                        <div class="w-3 h-3 bg-other rounded-full ml-3"></div>
+                        <span class="text-sm text-gray-600">Other</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Map Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-900">Live Event Map</h2>
+                        <p class="text-sm text-gray-600 mt-1">Click on the map to add an event at that location</p>
+                    </div>
+                    <div id="map" class="w-full h-96 bg-gray-100 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <span class="text-2xl">🗺️</span>
+                            </div>
+                            <p class="text-gray-600">Google Maps will load here</p>
+                            <p class="text-sm text-gray-500 mt-1">Add your Google Maps API key to see the interactive map</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Creation Form -->
+                <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Event</h3>
+                    <form id="eventForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="eventName" class="block text-sm font-medium text-gray-700 mb-1">Event Name</label>
+                                <input type="text" id="eventName" name="eventName" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="What's happening?">
+                            </div>
+                            <div>
+                                <label for="eventType" class="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
+                                <select id="eventType" name="eventType" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="">Select type...</option>
+                                    <option value="Party">Party</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                                <input type="datetime-local" id="startTime" name="startTime" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                                <input type="datetime-local" id="endTime" name="endTime" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="latitude" class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                                <input type="number" id="latitude" name="latitude" step="any" readonly
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                                    placeholder="Click on map to set location">
+                            </div>
+                            <div>
+                                <label for="longitude" class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                                <input type="number" id="longitude" name="longitude" step="any" readonly
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                                    placeholder="Click on map to set location">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn"
+                            class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200">
+                            Create Event (Demo Mode)
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="p-4 border-b bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">Live Events</h3>
+                        <p class="text-sm text-gray-600 mt-1">Events happening right now</p>
+                    </div>
+                    <div id="eventsList" class="max-h-96 overflow-y-auto">
+                        <!-- Demo Events -->
+                        <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-gray-900">Coffee Meetup</h4>
+                                    <div class="flex items-center mt-1">
+                                        <div class="w-2 h-2 rounded-full mr-2 bg-other"></div>
+                                        <span class="text-sm text-gray-600">Other</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">45 min remaining</p>
+                                </div>
+                                <div class="text-xs text-gray-400">demo-usr</div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-gray-900">Friday Night Party</h4>
+                                    <div class="flex items-center mt-1">
+                                        <div class="w-2 h-2 rounded-full mr-2 bg-party"></div>
+                                        <span class="text-sm text-gray-600">Party</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">2 hours remaining</p>
+                                </div>
+                                <div class="text-xs text-gray-400">demo-usr</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 text-center text-gray-500">
+                            <p class="text-sm">Demo events shown above</p>
+                            <p class="text-xs mt-1">Real events will appear here with Firebase setup</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="messageContainer" class="mt-4 space-y-2">
+                    <div class="p-3 rounded-md border bg-blue-50 text-blue-800 border-blue-200">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Demo mode active! UI fully functional.</span>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-blue-400 hover:text-blue-600">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo JavaScript -->
+    <script>
+        // Demo functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('eventForm');
+            
+            // Set default times
+            const now = new Date();
+            const startTimeInput = document.getElementById('startTime');
+            startTimeInput.value = now.toISOString().slice(0, 16);
+            
+            const endTimeInput = document.getElementById('endTime');
+            const defaultEndTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+            endTimeInput.value = defaultEndTime.toISOString().slice(0, 16);
+
+            // Demo location selection
+            const mapElement = document.getElementById('map');
+            mapElement.addEventListener('click', () => {
+                // Simulate location selection
+                const demoLat = 37.7749 + (Math.random() - 0.5) * 0.01;
+                const demoLng = -122.4194 + (Math.random() - 0.5) * 0.01;
+                
+                document.getElementById('latitude').value = demoLat.toFixed(6);
+                document.getElementById('longitude').value = demoLng.toFixed(6);
+                
+                showMessage('Demo location selected! (Click on map in full version)', 'success');
+            });
+
+            // Form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const eventName = formData.get('eventName');
+                
+                if (!eventName.trim()) {
+                    showMessage('Please enter an event name.', 'error');
+                    return;
+                }
+                
+                if (!formData.get('eventType')) {
+                    showMessage('Please select an event type.', 'error');
+                    return;
+                }
+                
+                const startTime = new Date(formData.get('startTime'));
+                const endTime = new Date(formData.get('endTime'));
+                
+                if (startTime >= endTime) {
+                    showMessage('End time must be after start time.', 'error');
+                    return;
+                }
+                
+                showMessage(`Demo: Event "${eventName}" would be created in full version!`, 'success');
+                
+                // Reset form
+                form.reset();
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                
+                // Reset default times
+                startTimeInput.value = now.toISOString().slice(0, 16);
+                endTimeInput.value = defaultEndTime.toISOString().slice(0, 16);
+            });
+        });
+
+        // Message system
+        function showMessage(text, type = 'info') {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageId = 'msg-' + Date.now();
+            
+            const colors = {
+                success: 'bg-green-50 text-green-800 border-green-200',
+                error: 'bg-red-50 text-red-800 border-red-200',
+                warning: 'bg-yellow-50 text-yellow-800 border-yellow-200',
+                info: 'bg-blue-50 text-blue-800 border-blue-200'
+            };
+
+            const messageDiv = document.createElement('div');
+            messageDiv.id = messageId;
+            messageDiv.className = `p-3 rounded-md border ${colors[type]} transition-opacity duration-500`;
+            messageDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="text-sm">${text}</span>
+                    <button onclick="document.getElementById('${messageId}').remove()" class="ml-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            messageContainer.appendChild(messageDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                const msg = document.getElementById(messageId);
+                if (msg) {
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500);
+                }
+            }, 5000);
+        }
+
+        console.log('Demo mode: Real-Time Event Discovery App UI loaded');
+        console.log('For full functionality, follow setup instructions in README.md');
+    </script>
+</body>
+</html>
